@@ -77,6 +77,12 @@ namespace Atomia.Store.AspNetMvc.Controllers
 
                 var orderContext = new OrderContext(cart, contactDataCollection, paymentData, new object[] { Request });
                 var result = orderPlacementService.PlaceOrder(orderContext);
+                
+                if (result.RedirectUrl == urlProvider.SuccessUrl)
+                {
+                    contactDataProvider.ClearContactData();
+                    cartProvider.ClearCart();
+                }
 
                 return Redirect(result.RedirectUrl);
             }
@@ -117,6 +123,8 @@ namespace Atomia.Store.AspNetMvc.Controllers
 	        {
                 case PaymentTransaction.Ok:
                 case PaymentTransaction.InProgress:
+                    contactDataProvider.ClearContactData();
+                    cartProvider.ClearCart();
                     redirectUrl = urlProvider.SuccessUrl;
                     break;
 
